@@ -1,0 +1,25 @@
+#Init
+
+import random
+import math
+
+#Fns
+
+#Main
+
+name1 = str(input("Enter the name of someone you know"))
+adjective1 = str(input("Enter an adjective"))
+verb1 = str(input("Enter a verb"))
+location1 = str(input("Enter a location"))
+softDrink1 = str(input("Enter a soft drink brand"))
+
+name1 = name1.title()
+location1 = location1.title()
+softDrink1 = softDrink1.title()
+
+print("You were walking around, enjoying the beautiful July day at Six Flags")
+print("When suddenly, you saw " + '\033[1m' + name1 + '\033[0m' + " looking absolutely " + '\033[1m' + adjective1 + '\033[0m' + "!")
+print("You walked over to him and said '" + '\033[1m' + name1 + '\033[0m' + ", it's great to see you!")
+print("Do you want to go " + '\033[1m' + verb1 + '\033[0m' + " after this?'")
+print('\033[1m' + name1 + '\033[0m' + " responded, 'Oh absolutely! We should go " + '\033[1m' + verb1 + '\033[0m' + " in " + '\033[1m' + location1 + '\033[0m' + "!'")
+print("So off you two go, " + '\033[1m' + verb1 + '\033[0m' + " in " + '\033[1m' + location1 + '\033[0m' + " using your " + '\033[1m' + softDrink1 + '\033[0m' + " shaped rocket!")
