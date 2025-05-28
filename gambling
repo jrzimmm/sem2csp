@@ -1,0 +1,202 @@
+#Init
+
+import time
+import random
+import itertools
+from collections import Counter
+import math
+
+chips = 100
+isQuit = 0
+fixed = False
+cardLibrary = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
+card_values = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 11, "Q": 12, "K": 13}
+
+
+#Fns
+
+##Introduction and Action Selection menu. Error handling for
+def actionSelect():
+    global cardLibrary
+    global chips
+    print("\nWould you like to:" + "\n(1): Pull the slot machine" + "\n(2): View Payouts" + "\n(3): Quit")
+    print("You currently have " + '\033[1m' + str(chips) + " CHIPS" + '\033[0m')
+
+    while True:
+        try:
+            actionSelected = int(input("Enter either '1' (to spin), '2' (to view payouts), or '3' (to quit) here!"))
+            break
+        except ValueError:
+            print("PLEASE ENTER A VALID INPUT!")
+
+    if actionSelected == 3:
+        global isQuit
+        isQuit = 1
+
+    elif actionSelected == 1:
+
+        print("\nHow many chips would you like to wager?")
+
+        while True:
+            try:
+                global wager
+                wager = input("Enter number of chips you would like to wager, or type 'max' to wage all your chips!")
+                if wager.casefold() == "max":
+                    wager = chips
+                else:
+                    if int(wager) > chips:
+                        wager = chips
+                        print("\nYour wager was adjusted to your max chips because you did not have enough chips!\n")
+                    if int(wager) < 0:
+                        wager = 0
+
+                wager = int(wager)
+                print("You have wagered " + '\033[1m' + str(wager) + " CHIPS!" + '\033[0m')
+                chips = chips - wager
+
+                slot_spin()
+                break
+
+            except ValueError:
+                print("Please enter a valid chip amount, or type 'max' to go all in")
+
+    elif actionSelected == 2:
+        time.sleep(1)
+        print('\033[1m' + "\nPOKER HAND PAYOUTS:" + '\033[0m' +
+              "\n----------------------------" +
+              '\033[1m' + "\n0x     |" + '\033[0m' + " High Card" +
+              '\033[1m' + "\n0.2x   |" + '\033[0m' + " Pair" +
+              '\033[1m' + "\n2x     |" + '\033[0m' + " Two-Pair" +
+              '\033[1m' + "\n8x     |" + '\033[0m' + " Three of a Kind" +
+              '\033[1m' + "\n40x    |" + '\033[0m' + " Full House" +
+              '\033[1m' + "\n80x    |" + '\033[0m' + " Straight" +
+              '\033[1m' + "\n190x   |" + '\033[0m' + " Four of a Kind" +
+              '\033[1m' + "\n1,000x |" + '\033[0m' + " Five of a Kind" +
+              "\n----------------------------")
+        time.sleep(3)
+
+    elif actionSelected == 8:
+        time.sleep(1)
+        cardLibrary.clear()
+        cardLibrary.append("A")
+        print("\nDeck has successfully been converted to all Aces!\n")
+        time.sleep(2)
+
+    elif actionSelected == 9:
+        time.sleep(1)
+        cardLibrary.clear()
+        cardLibrary = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
+        print("\nDeck has successfully been reset!\n")
+        time.sleep(2)
+
+    elif actionSelected == 10:
+        time.sleep(1)
+        slot1 = "A"
+        slot2 = "K"
+        slot3 = "Q"
+        slot4 = "J"
+        slot5 = "10"
+        global fixed
+        fixed = True
+        print("\nDeck has successfully been fixed! Next spin will result in a STRAIGHT\n")
+        time.sleep(2)
+
+    elif actionSelected == 11:
+        time.sleep(1)
+        fixed = False
+        print("\nDeck has successfully been unfixed! Next spin will be random!\n")
+        time.sleep(2)
+
+    else:
+        print("PLEASE ENTER A VALID INTEGER")
+
+
+
+def slot_spin():
+    time.sleep(1)
+    print("\nSpinning...")
+    time.sleep(1)
+    global cardLibrary
+    global slot1
+    global slot2
+    global slot3
+    global slot4
+    global slot5
+    if fixed == False:
+        slot1 = random.choice(cardLibrary)
+        slot2 = random.choice(cardLibrary)
+        slot3 = random.choice(cardLibrary)
+        slot4 = random.choice(cardLibrary)
+        slot5 = random.choice(cardLibrary)
+
+    hand = [slot1, slot2, slot3, slot4, slot5]
+    counts = Counter(hand)
+
+    selected_values = [card_values[card] for card in hand]
+    selected_values.sort()
+
+    is_straight = all(selected_values[i] == selected_values[i - 1] + 1 for i in range(1, len(selected_values))) or selected_values == [1, 10, 11, 12, 13]
+
+
+    pairs = [card for card, count in counts.items() if count == 2]
+    three_oak = [card for card, count in counts.items() if count == 3]
+    four_oak = [card for card, count in counts.items() if count == 4]
+
+    # Check for full house
+    is_full_house = len(three_oak) == 1 and len(pairs) == 1
+
+    # Check for two pairs
+    is_two_pairs = len(pairs) == 2
+
+    print('\033[1m' + "YOU ROLLED:   " + '\033[0m' + "[" + slot1 +"] " + "[" + slot2 +"] " + "[" + slot3 +"] " + "[" + slot4 +"] " + "[" + slot5 +"]")
+    time.sleep(1)
+
+    if slot1 == slot2 == slot3 == slot4 == slot5:
+        print("CONGRATS! You rolled a " + '\033[1m' + "FIVE of a Kind!" + '\033[0m')
+        payout = 1000
+
+    elif len(four_oak) == 1:
+        print("CONGRATS! You rolled a " + '\033[1m' + "FOUR of a Kind!" + '\033[0m')
+        payout = 190
+
+    elif is_straight == True:
+        print("CONGRATS! You rolled a " + '\033[1m' + "STRAIGHT!" + '\033[0m')
+        payout = 80
+
+    elif is_full_house == True:
+        print("CONGRATS! You rolled a " + '\033[1m' + "Full House!" + '\033[0m')
+        payout = 40
+
+    elif len(three_oak) == 1:
+        print("CONGRATS! You rolled a " + '\033[1m' + "THREE of a Kind!" + '\033[0m')
+        payout = 8
+
+    elif is_two_pairs == True:
+        print("CONGRATS! You rolled a " + '\033[1m' + "Two Pair!" + '\033[0m')
+        payout = 2
+
+    elif len(pairs) == 1:
+        print("You rolled a " + '\033[1m' + "Pair" + '\033[0m')
+        payout = 0.2
+
+    else:
+        print("You rolled a " + '\033[1m' + "High Card!" + '\033[0m')
+        payout = 0
+
+    global chips
+    chips = chips + round((wager * payout))
+    time.sleep(0.5)
+    print("\nYour " + '\033[1m' + str(wager) + " CHIP " + '\033[0m' + "wager turned into " + '\033[1m' + str(round((wager * payout))) + " CHIPS!" + '\033[0m')
+    time.sleep(2)
+
+    if chips < 1:
+        print("Unfortunately, you have run out of chips and can no longer play. Better luck next time!")
+        global isQuit
+        isQuit = 1
+
+
+#Main
+
+print("Welcome to Gambling Simulator v.0.0.0.1")
+while isQuit != 1:
+    actionSelect()
